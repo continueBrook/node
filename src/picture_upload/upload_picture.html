@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+    *{margin:0;padding:0}
+    .box{width:400px;height:200px;border:1px solid black;text-align:center;display:none}
+    .ul_list{width:100%;height:200px;}
+    .ul_list li{list-style:none;float: left;width:200px;height:200px;border:1px solid black}
+    .ul_list li .oImg{width:100%;height:100%}
+    </style>
+    <script>
+    window.onload = function(){
+        let oBox = document.querySelector(".box");
+        let oUl  = document.querySelector(".ul_list");
+        let data = new FormData();
+        let timer;
+        oBox.addEventListener('dragenter',() => {
+            oBox.innerHTML = '松手上传';
+        },false);
+        oBox.addEventListener('dragleave',() => {
+            oBox.innerHTML = '将文件拖进来';
+        },false);
+        document.addEventListener('dragover',(event) => {
+            oBox.style.display = "block";
+            clearTimeout(timer);
+            timer = setTimeout(() =>{
+                oBox.style.display = "none";
+            },300);
+            event.preventDefault();
+        },false);
+        oBox.addEventListener('drop',(event) => {
+            Array.from(event.dataTransfer.files).forEach(file => {
+                if(!file.type.startsWith('image')){
+                    return;
+                }
+                let reader = new FileReader();
+                reader.onload = function(){
+                    console.log(reader.result);
+                    let oLi = document.createElement("li");
+                    oLi.file = file;
+                    oLi.innerHTML = "<img class='oImg' src='' alt=''><a href='#' class='exit'>删除</a>";
+                    oUl.appendChild(oLi);
+                    oLi.children[0].src=reader.result;
+                    oLi.children[1].onclick = function(){
+                        oUl.removeChild(oLi);
+                    }
+                }
+                reader.readAsDataURL(file);
+            })
+            event.preventDefault();
+        },false);
+        document.querySelector("#btn").onclick = function(){
+            Array.from(oUl.children).forEach(li => {
+                data.append("file",li.file);
+            })
+            let xhr = new XMLHttpRequest();
+            xhr.open("post",'http://localhost:3000/api',true);
+            xhr.send(data);
+            data.delete("file");
+            xhr.onreadystatechange = function(){
+                if(xhr.readyState==4){
+                    if(xhr.status==200){
+                        console.log("sucess"+xhr.responseText);
+                    }else{
+                        console.log("fail");
+                    }
+                }
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <ul class="ul_list">
+    </ul>
+    <div class="box">
+        将文件拖进来
+    </div>
+    <input type="button" value="提交" id="btn">
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="./native_ajax.js"></script>
+</head>
+<body>
+    用户:<input type="text" id="user"><br>
+    密码:<input type="password" id="pass"><br>
+    <input type="button" value="注册" id="btn_reg">
+    <input type="button" value="登陆" id="btn_log">
+    <script>
+    let btn_reg = document.getElementById("btn_reg");
+    let btn_log = document.getElementById("btn_log");
+    let user    = document.getElementById("user");
+    let pass    = document.getElementById("pass");
+    let obj     = {};
+    btn_reg.onclick = function(){
+        ajax({
+            method:'post',
+            url:'http://localhost:3000/reg',
+            data:{"user":user.value,"pass":pass.value},
+            dataType:"json",
+            sucess:function(str){
+                console.log(str.error);
+                if(str.error=="1"){
+                    console.log("失败："+str.msg);
+                }else{
+                    console.log("成功："+str.msg);
+                }
+            },
+            error:function(str){
+                console.log(str);
+            }
+        });
+    };
+    btn_log.onclick = function(){
+        ajax({
+            method:'get',
+            url:'http://localhost:3000/login',
+            data:{"user":user.value,"pass":pass.value},
+            dataType:"json",
+            sucess:function(str){
+                console.log(str.error);
+                if(str.error=="1"){
+                    console.log("失败："+str.msg);
+                }else{
+                    console.log("成功："+str.msg);
+                }
+            },
+            error:function(str){
+                console.log(str);
+            }
+        });
+    }
+    </script>
+</body>
+</html>
