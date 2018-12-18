@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+    .bar{width:0px;height:50px;background: green;}
+    .box{width:200px;height:200px;margin:100px auto 0;border:1px solid black;}
+    </style>
+    <script>
+        window.onload = function(){
+            let oBar = document.getElementsByClassName('bar')[0];
+            let oBox = document.getElementsByClassName('box')[0];
+            let oBtn = document.getElementById('btn');
+            let data = new FormData();
+            oBox.addEventListener('dragenter',function(){
+                oBox.innerHTML = '松手上传'
+            },false);
+            oBox.addEventListener('dragleave',function(){
+                oBox.innerHTML = '拖进上传'
+            },false);
+            oBox.addEventListener('dragover',function(){
+                event.preventDefault();
+            },false);
+            oBox.addEventListener('drop',function(event){
+                Array.from(event.dataTransfer.files).forEach(item => {
+                    data.append('file',item);
+                })
+                event.preventDefault();
+            },false);
+            oBtn.onclick = function(){
+                if(!data.get('file')){
+                    oBar.style.width =0;
+                    return;
+                }
+                let xhr = new XMLHttpRequest();
+                xhr.open('post','http://localhost:3000/api',true);
+                xhr.upload.onprogress = function(event){ //必须放在send前面
+                    console.log(event);
+                    oBar.style.width = 100*(event.loaded/event.total)+"%";
+                }
+                xhr.send(data);
+                data.delete('file');
+                xhr.onreadystatechange = function(){
+                    if(xhr.readyState==4){
+                        if(xhr.status==200){
+                            console.log("sucess" + xhr.responseText);
+                        }else{
+                            console.log("faile");
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="bar"></div>
+    <div class="box">
+        拖进上传
+    </div>
+    <input type="button" value="提交" id="btn">
+</body>
+</html>
