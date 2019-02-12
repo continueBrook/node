@@ -17,9 +17,12 @@
   },
   "homepage": "https://github.com/continueBrook/node#readme",
   "dependencies": {
-    "mysql": "^2.16.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "multer": "^1.4.1"
+    "jsdom": "^13.2.0",
+    "mime-db": "^1.38.0",
+    "multer": "^1.4.1",
+    "mysql": "^2.16.0",
+    "mysql-pro": "^1.0.1"
   }
 }
